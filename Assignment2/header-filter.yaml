@@ -1,0 +1,6 @@
+filters:
+- type: RequestHeaderModifier
+  requestHeaderModifier:
+    add:
+    - name: X-Company
+      value: DevOps
