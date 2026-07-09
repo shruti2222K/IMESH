@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: echoserver-deployment
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: echoserver
+
+  template:
+    metadata:
+      labels:
+        app: echoserver
+
+    spec:
+      containers:
+      - name: echoserver
+
+        image: ealen/echo-server
+
+        ports:
+        - containerPort: 80
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
