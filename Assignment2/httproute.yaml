@@ -1,65 +1,35 @@
+
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: app-routing
+  name: app-route
   namespace: gateway-demo
 spec:
   parentRefs:
-  - name: envoy-gateway
-
-  hostnames:
-  - web.company.local
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: nginx
-      port: 80
-
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: api-routing
-  namespace: gateway-demo
-spec:
-  parentRefs:
-  - name: envoy-gateway
-
-  hostnames:
-  - api.company.local
+    - name: envoy-gateway
 
   rules:
+
   - matches:
-    - path:
-        type: PathPrefix
-        value: /
-
+      - headers:
+          - name: Host
+            value: web.company.local
     backendRefs:
-    - name: httpbin
-      port: 80
+      - name: nginx
+        port: 80
 
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: test-routing
-  namespace: gateway-demo
-spec:
-  parentRefs:
-  - name: envoy-gateway
-
-  hostnames:
-  - test.company.local
-
-  rules:
   - matches:
-    - path:
-        type: PathPrefix
-        value: /
-
+      - headers:
+          - name: Host
+            value: api.company.local
     backendRefs:
-    - name: echoserver
-      port: 80
+      - name: httpbin
+        port: 80
+
+  - matches:
+      - headers:
+          - name: Host
+            value: test.company.local
+    backendRefs:
+      - name: echoserver
+        port: 80
