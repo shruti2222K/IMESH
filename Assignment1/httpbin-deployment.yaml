@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: httpbin-deployment
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: httpbin
+
+  template:
+    metadata:
+      labels:
+        app: httpbin
+
+    spec:
+      containers:
+      - name: httpbin
+
+        image: kennethreitz/httpbin
+
+        ports:
+        - containerPort: 80
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+
+        readinessProbe:
+          httpGet:
+            path: /get
+            port: 80
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /get
+            port: 80
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
