@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gateway-cert
+  namespace: gateway-demo
+spec:
+  secretName: gateway-tls
+
+  issuerRef:
+    name: company-ca
+    kind: ClusterIssuer
+
+  commonName: web.company.local
+
+  dnsNames:
+    - web.company.local
+    - api.company.local
+    - test.company.local
