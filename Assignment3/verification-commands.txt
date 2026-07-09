@@ -1,0 +1,23 @@
+kubectl get pods -n cert-manager
+
+kubectl get clusterissuer
+
+kubectl get certificate -A
+
+kubectl get secret -A
+
+kubectl describe certificate gateway-cert -n gateway-demo
+
+kubectl describe secret gateway-tls -n gateway-demo
+
+kubectl get gateway
+
+curl -k https://web.company.local
+
+curl -k https://api.company.local/get
+
+curl -k https://test.company.local
+
+openssl s_client -connect web.company.local:443
+
+kubectl describe certificate gateway-cert
