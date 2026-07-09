@@ -1,0 +1,52 @@
+Theory Questions
+1. What is a Certificate Authority (CA)?
+
+A Certificate Authority (CA) is a trusted organization or entity that issues and digitally signs SSL/TLS certificates. The CA verifies the identity of the certificate owner and establishes trust between clients and servers. Browsers and operating systems trust certificates issued by recognized CAs.
+
+2. Why is a CA required?
+
+A CA is required to:
+
+Verify the identity of the certificate owner.
+Prevent impersonation and man-in-the-middle attacks.
+Digitally sign certificates so clients can trust them.
+Enable secure HTTPS communication using SSL/TLS.
+
+Without a trusted CA, clients cannot verify the authenticity of a server's certificate.
+
+3. How does cert-manager issue certificates?
+
+cert-manager automates certificate management in Kubernetes:
+
+A Certificate resource is created.
+cert-manager detects the new resource.
+It sends a certificate request to the configured Issuer or ClusterIssuer.
+The issuer signs the certificate.
+cert-manager stores the certificate and private key in a Kubernetes TLS Secret.
+Applications or Gateways reference this Secret to enable HTTPS.
+4. What happens when a certificate expires?
+
+When a certificate expires:
+
+HTTPS clients no longer trust the certificate.
+Browsers display security warnings.
+TLS connections may fail.
+Applications using the certificate may become inaccessible over HTTPS until a new valid certificate is installed.
+5. How does automatic renewal work?
+
+cert-manager continuously monitors certificate expiration dates. Before a certificate expires (typically around 30 days in advance, depending on configuration), it automatically requests a new certificate from the configured issuer, updates the Kubernetes Secret with the renewed certificate, and workloads using the Secret can continue serving HTTPS without manual intervention.
+
+6. How would you verify a certificate from the command line?
+
+Using OpenSSL:
+
+openssl s_client -connect web.company.local:443
+
+View certificate details:
+
+openssl x509 -in certificate.crt -text -noout
+
+Verify the certificate against a CA:
+
+openssl verify -CAfile ca.crt certificate.crt
+
