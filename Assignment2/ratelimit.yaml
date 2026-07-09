@@ -1,0 +1,19 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: rate-limit
+  namespace: gateway-demo
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: httpbin
+
+  rateLimit:
+    type: Local
+
+    local:
+      rules:
+        - limit:
+            requests: 10
+            unit: Minute
