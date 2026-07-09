@@ -1,1 +1,78 @@
+# Check Cluster
 
+kubectl cluster-info
+
+kubectl get nodes
+
+# Deploy nginx
+
+kubectl apply -f nginx-deployment.yaml
+kubectl apply -f nginx-service.yaml
+
+# Deploy httpbin
+
+kubectl apply -f httpbin-deployment.yaml
+kubectl apply -f httpbin-service.yaml
+
+# Deploy echoserver
+
+kubectl apply -f echoserver-deployment.yaml
+kubectl apply -f echoserver-service.yaml
+
+# Verify Deployments
+
+kubectl get deployments
+
+kubectl describe deployment nginx-deployment
+
+kubectl describe deployment httpbin-deployment
+
+kubectl describe deployment echoserver-deployment
+
+# Verify Pods
+
+kubectl get pods
+
+kubectl get pods -o wide
+
+kubectl describe pod <pod-name>
+
+# Verify Services
+
+kubectl get svc
+
+kubectl describe svc nginx-service
+
+kubectl describe svc httpbin-service
+
+kubectl describe svc echoserver-service
+
+# Verify Endpoints
+
+kubectl get endpoints
+
+# Verify Resource Limits
+
+kubectl describe pod <pod-name>
+
+# Test Service
+
+kubectl run curl-test --image=curlimages/curl -it --rm -- sh
+
+Inside pod:
+
+curl http://nginx-service
+
+curl http://httpbin-service/get
+
+curl http://echoserver-service
+
+exit
+
+# Check Events
+
+kubectl get events
+
+# Delete Resources
+
+kubectl delete -f .
