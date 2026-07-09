@@ -69,3 +69,39 @@ curl http://echoserver-service
 ```bash
 kubectl delete -f .
 ```
+
+# Assignment 2 - API Gateway
+
+## Features Implemented
+
+- Host-based Routing
+- Path-based Routing
+- URL Rewrite
+- Header Injection
+- Request Timeout
+- Retry Policy
+- Rate Limiting (10 requests/min)
+
+## Backends
+
+| Host | Backend |
+|------|---------|
+| web.company.local | nginx |
+| api.company.local | httpbin |
+| test.company.local | echoserver |
+
+## Apply Files
+
+```bash
+kubectl apply -f gateway.yaml
+kubectl apply -f httproute.yaml
+kubectl apply -f header-filter.yaml
+kubectl apply -f rewrite-filter.yaml
+kubectl apply -f timeout.yaml
+kubectl apply -f retry.yaml
+kubectl apply -f ratelimit.yaml
+```
+
+## Verification
+
+Use the commands in `verification-commands.txt`.
