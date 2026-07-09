@@ -1,0 +1,52 @@
+# Gateway
+
+kubectl get gateway -n gateway-demo
+
+kubectl get httproute -n gateway-demo
+
+kubectl get pods
+
+kubectl get svc
+
+##################################################
+
+# Host Routing
+
+curl -H "Host: web.company.local" http://<Gateway-IP>
+
+curl -H "Host: api.company.local" http://<Gateway-IP>/get
+
+curl -H "Host: test.company.local" http://<Gateway-IP>
+
+##################################################
+
+# Header Injection
+
+curl -H "Host: api.company.local" http://<Gateway-IP>/headers
+
+##################################################
+
+# URL Rewrite
+
+curl -H "Host: api.company.local" http://<Gateway-IP>/api/get
+
+##################################################
+
+# Timeout
+
+curl -H "Host: api.company.local" http://<Gateway-IP>/delay/10
+
+##################################################
+
+# Retry
+
+curl -H "Host: api.company.local" http://<Gateway-IP>/status/500
+
+##################################################
+
+# Rate Limit
+
+for i in {1..12}
+do
+curl -H "Host: api.company.local" http://<Gateway-IP>/get
+done
