@@ -105,3 +105,33 @@ kubectl apply -f ratelimit.yaml
 ## Verification
 
 Use the commands in `verification-commands.txt`.
+# Assignment 3 - TLS & Certificates
+
+## Objectives
+
+- Install cert-manager
+- Create Self-Signed CA
+- Create ClusterIssuer
+- Create TLS Certificate
+- Create Kubernetes TLS Secret
+- Configure HTTPS Gateway
+
+## Files
+
+- selfsigned-ca.yaml
+- clusterissuer.yaml
+- certificate.yaml
+- gateway-tls.yaml
+
+## Installation
+
+```bash
+kubectl apply -f selfsigned-ca.yaml
+kubectl apply -f clusterissuer.yaml
+kubectl apply -f certificate.yaml
+kubectl apply -f gateway-tls.yaml
+```
+
+## Verification
+
+Run the commands in verification-commands.txt
