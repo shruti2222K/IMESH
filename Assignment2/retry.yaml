@@ -1,0 +1,16 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: retry-policy
+  namespace: gateway-demo
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: httpbin
+
+  retry:
+    numRetries: 3
+    retryOn:
+      triggers:
+        - "5xx"
