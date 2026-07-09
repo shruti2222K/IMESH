@@ -1,0 +1,299 @@
+Networking Fundamentals
+Scenario
+
+A user accesses the following URL:
+
+https://api.company.local/orders
+
+This request passes through several networking components before reaching the application running inside a Kubernetes Pod. The following sections explain the complete traffic journey.
+
+Complete Traffic Journey
+Step 1: DNS Resolution
+
+When the user enters:
+
+https://api.company.local/orders
+
+the browser first needs to determine the IP address of api.company.local.
+
+The browser checks its local DNS cache.
+If no record is found, it sends a DNS query to the configured DNS server.
+The DNS server returns the IP address of the Envoy Gateway (LoadBalancer or NodePort).
+The browser now knows where to send the HTTPS request.
+
+Example
+
+api.company.local
+        │
+        ▼
+DNS Server
+        │
+        ▼
+192.168.49.2
+Step 2: HTTPS Connection
+
+Using the IP address returned by DNS, the browser establishes a secure HTTPS connection.
+
+A TCP connection is created on port 443.
+A TLS handshake occurs.
+The Envoy Gateway presents its TLS certificate.
+The browser verifies the certificate.
+If the certificate is valid, an encrypted communication channel is established.
+Step 3: Request Reaches the Gateway
+
+The HTTPS request reaches the Envoy Gateway.
+
+Example request:
+
+GET /orders HTTP/1.1
+
+Host: api.company.local
+
+The Gateway checks:
+
+Host name
+Path
+TLS configuration
+Routing rules
+
+The Gateway forwards the request to the correct HTTPRoute.
+
+Step 4: HTTPRoute Matching
+
+The HTTPRoute compares the incoming request against configured rules.
+
+Example:
+
+Host:
+api.company.local
+
+Path:
+/orders
+
+The matching rule forwards the request to the httpbin Kubernetes Service.
+
+Step 5: Envoy Proxy
+
+The Envoy Proxy performs Layer 7 processing.
+
+Possible actions include:
+
+Host-based routing
+Path-based routing
+URL rewriting
+Header injection
+Authentication
+Authorization
+Rate limiting
+Retry policy
+Timeout handling
+Logging
+Metrics collection
+
+After processing, Envoy forwards the request to the Kubernetes Service.
+
+Step 6: Kubernetes Service
+
+The request reaches the Kubernetes Service.
+
+Example:
+
+Service
+Name: httpbin
+
+Port: 80
+
+The Service provides a stable virtual IP (ClusterIP) and load balances traffic across healthy Pods.
+
+Step 7: kube-proxy (or eBPF)
+
+The Service forwards traffic using:
+
+kube-proxy
+
+kube-proxy updates iptables or IPVS rules.
+
+It chooses one healthy Pod and forwards traffic.
+
+OR
+
+eBPF
+
+If eBPF (such as Cilium) is used:
+
+Packet forwarding happens inside the Linux kernel.
+Lower latency.
+Better performance.
+Reduced CPU overhead.
+Step 8: Pod
+
+The selected Pod receives the request.
+
+Example:
+
+httpbin-pod
+
+10.244.0.12
+
+The Pod contains one or more containers running the application.
+
+Step 9: Container
+
+The container processes:
+
+GET /orders
+
+The application:
+
+Executes business logic
+Reads data (if required)
+Generates an HTTP response
+
+Example response:
+
+HTTP/1.1 200 OK
+
+{
+   "orders":[]
+}
+Step 10: Response Returns
+
+The response travels back through the same path:
+
+Container
+      │
+Pod
+      │
+Service
+      │
+kube-proxy / eBPF
+      │
+Envoy Proxy
+      │
+Gateway
+      │
+Internet
+      │
+Browser
+
+The browser receives the response and displays the result to the user.
+
+OSI Layer Explanation
+Layer 3 – Network Layer
+
+Responsible for IP addressing and packet routing.
+
+Functions:
+
+Source IP Address
+Destination IP Address
+Packet forwarding
+Routing between networks
+
+Example:
+
+Browser
+
+↓
+
+192.168.49.2
+
+↓
+
+Gateway
+
+Protocols:
+
+IP
+ICMP
+Layer 4 – Transport Layer
+
+Responsible for reliable communication.
+
+Functions:
+
+TCP connection
+Port numbers
+Error recovery
+Flow control
+
+Example:
+
+Client Port
+
+52345
+
+↓
+
+Server Port
+
+443
+
+Protocol:
+
+TCP
+Layer 7 – Application Layer
+
+Responsible for application-level communication.
+
+Functions:
+
+HTTP
+HTTPS
+Host routing
+URL routing
+Headers
+Cookies
+Authentication
+Rate limiting
+Retries
+Timeouts
+
+Example:
+
+GET /orders HTTP/1.1
+
+Host: api.company.local
+
+This is where Envoy Gateway operates.
+
+Complete Architecture Diagram
+                   User Browser
+                        │
+                        │
+             https://api.company.local/orders
+                        │
+                        ▼
+                 DNS Resolution
+                        │
+                        ▼
+             Envoy Gateway (HTTPS)
+                        │
+                        ▼
+                 HTTPRoute Match
+                        │
+                        ▼
+                 Envoy Proxy
+     (Routing, Retry, Timeout, Headers,
+      URL Rewrite, Rate Limiting)
+                        │
+                        ▼
+              Kubernetes Service
+                        │
+                        ▼
+             kube-proxy / eBPF
+                        │
+                        ▼
+                    Kubernetes Pod
+                        │
+                        ▼
+                httpbin Container
+                        │
+                        ▼
+                HTTP Response (200 OK)
+                        │
+                        ▼
+                  User Browser
+Conclusion
+
+When a user accesses https://api.company.local/orders, the request is first resolved through DNS, secured using TLS, routed by the Envoy Gateway, processed by the Envoy Proxy, forwarded to the appropriate Kubernetes Service, load balanced by kube-proxy or eBPF to a healthy Pod, and finally handled by the application container. The response follows the reverse path back to the user's browser. This architecture provides secure, scalable, and reliable traffic management for Kubernetes applications.
