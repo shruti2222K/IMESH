@@ -1,0 +1,14 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: timeout-policy
+  namespace: gateway-demo
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: httpbin
+
+  timeout:
+    http:
+      requestTimeout: 5s
